@@ -60,11 +60,11 @@ jobs:
           cache-to: type=gha,mode=max
 
       # ---------- Run app + smoke test ----------
-      - name: Run container (with DB connection)
+      - name: Run container (host network, DB on localhost)
         run: |
           docker run -d --name steelcalculator_test \
-            -e DATABASE_URL="postgresql+psycopg2://diana:20041902@host.docker.internal:5432/db" \
-            -p 5000:5000 \
+            --network host \
+            -e DATABASE_URL="postgresql+psycopg2://diana:20041902@127.0.0.1:5432/db" \
             steelcalculator:ci
 
       - name: Smoke test (homepage)
