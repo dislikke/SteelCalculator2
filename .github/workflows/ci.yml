@@ -1,27 +1,22 @@
-name: CI (SteelCalculator only)
+name: CI
 
 on:
   push:
-    paths:
-      - "App/SteelCalculator/**"
-      - ".github/workflows/**"
   pull_request:
-    paths:
-      - "App/SteelCalculator/**"
-      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
   build-and-smoke:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: App/SteelCalculator
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Show files
+        run: |
+          pwd
+          ls -la
 
       - name: Build Docker image
         run: docker build -t steelcalculator:ci .
@@ -36,7 +31,7 @@ jobs:
         run: |
           for i in {1..20}; do
             if curl -fsS http://localhost:5000/ > /dev/null; then
-              echo "OK"
+              echo "OK: app is up"
               exit 0
             fi
             sleep 2
