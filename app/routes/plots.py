@@ -27,7 +27,9 @@ def generate_plots(result):
     # Поддерживаем как ORM-объект, так и словарь из session
     if hasattr(result, "cr"):
         Cr, Ni, Mo, Mn = result.cr, result.ni, result.mo, result.mn
-        sigma, hrc, T = result.sigma, result.hardness, result.t_melt
+      #  sigma, hrc, T = result.sigma, result.hardness, result.t_melt
+        T = result.t_melt
+
         coef = getattr(result, "coef", {})
     else:
         Cr = result["composition"]["Cr"]
