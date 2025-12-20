@@ -9,36 +9,79 @@ jobs:
   build-and-smoke:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: db
+          POSTGRES_USER: diana
+          POSTGRES_PASSWORD: 20041902
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U diana -d db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show files
+      # ---------- Python quality checks ----------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies + linters
         run: |
-          pwd
-          ls -la
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff black
 
-      - name: Build Docker image
-        run: docker build -t steelcalculator:ci .
+      - name: Ruff (lint)
+        run: ruff check .
 
-      - name: Run container
+      - name: Black (format check)
+        run: black --check .
+
+      # ---------- Docker build with cache ----------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (cached)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: steelcalculator:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ---------- Run app + smoke test ----------
+      - name: Run container (with DB connection)
         run: |
           docker run -d --name steelcalculator_test \
+            -e DATABASE_URL="postgresql+psycopg2://diana:20041902@host.docker.internal:5432/db" \
             -p 5000:5000 \
             steelcalculator:ci
 
-      - name: Smoke test
+      - name: Smoke test (homepage)
         run: |
-          for i in {1..20}; do
+          for i in {1..30}; do
             if curl -fsS http://localhost:5000/ > /dev/null; then
               echo "OK: app is up"
               exit 0
             fi
+            echo "Waiting for app..."
             sleep 2
           done
-          docker logs steelcalculator_test
+          echo "App did not start"
+          docker logs steelcalculator_test || true
           exit 1
 
       - name: Cleanup
         if: always()
-        run: docker rm -f steelcalculator_test || true
+        run: |
+          docker rm -f steelcalculator_test || true
