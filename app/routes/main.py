@@ -2,11 +2,14 @@ from flask import Blueprint, render_template
 from app.extensions import db
 from app.models.requirement import Requirement
 
-main = Blueprint('main', __name__)
-@main.route('/')
-@main.route('/index')
+main = Blueprint("main", __name__)
+
+
+@main.route("/")
+@main.route("/index")
 def index():
-    return render_template('main/index.html')
+    return render_template("main/index.html")
+
 
 @main.route("/about")
 def about():
@@ -19,11 +22,7 @@ def db_test():
     db.create_all()
 
     # создаём запись в существующей таблице requirements
-    req = Requirement(
-        sigma_req=1234.0,
-        hard_req=55.0,
-        t_req=1500.0
-    )
+    req = Requirement(sigma_req=1234.0, hard_req=55.0, t_req=1500.0)
     db.session.add(req)
     db.session.commit()
 

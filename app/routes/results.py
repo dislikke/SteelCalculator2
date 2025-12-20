@@ -46,7 +46,9 @@ def show(result_id):
         )
 
     if Cr * Ni > limits.get("crni_max", 2.0):
-        reasons.append(f"Cr×Ni ({Cr*Ni:.2f}) превышает максимум {limits.get('crni_max', 2.0)}")
+        reasons.append(
+            f"Cr×Ni ({Cr*Ni:.2f}) превышает максимум {limits.get('crni_max', 2.0)}"
+        )
 
     if sigma + EPS < req.get("sigma", 0):
         reasons.append(f"σ={sigma:.1f} меньше требуемого {req.get('sigma')}")

@@ -52,7 +52,9 @@ def default_params() -> Dict[str, Any]:
     }
 
 
-def _bounds_array(bounds_dict: Dict[str, Tuple[float, float]]) -> List[Tuple[float, float]]:
+def _bounds_array(
+    bounds_dict: Dict[str, Tuple[float, float]],
+) -> List[Tuple[float, float]]:
     return [bounds_dict["Cr"], bounds_dict["Ni"], bounds_dict["Mo"], bounds_dict["Mn"]]
 
 
@@ -60,7 +62,9 @@ def _midpoint(bounds: List[Tuple[float, float]]) -> np.ndarray:
     return np.array([(lo + hi) / 2.0 for (lo, hi) in bounds], dtype=float)
 
 
-def _random_start(bounds: List[Tuple[float, float]], rng: np.random.Generator) -> np.ndarray:
+def _random_start(
+    bounds: List[Tuple[float, float]], rng: np.random.Generator
+) -> np.ndarray:
     lo = np.array([b[0] for b in bounds], dtype=float)
     hi = np.array([b[1] for b in bounds], dtype=float)
     return lo + (hi - lo) * rng.random(size=4)
@@ -216,6 +220,3 @@ def optimize_custom(params: Dict[str, Any]) -> Dict[str, Any]:
         "nit": int(getattr(best, "nit", 0)),
         "status": int(getattr(best, "status", -1)),
     }
-
-
-

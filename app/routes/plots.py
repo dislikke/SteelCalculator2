@@ -2,7 +2,8 @@ import io
 import base64
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Без окон, только для сохранения в файл или буфер
+
+matplotlib.use("Agg")  # Без окон, только для сохранения в файл или буфер
 import matplotlib.pyplot as plt
 from flask import Blueprint, render_template, session
 
@@ -27,7 +28,7 @@ def generate_plots(result):
     # Поддерживаем как ORM-объект, так и словарь из session
     if hasattr(result, "cr"):
         Cr, Ni, Mo, Mn = result.cr, result.ni, result.mo, result.mn
-      #  sigma, hrc, T = result.sigma, result.hardness, result.t_melt
+        #  sigma, hrc, T = result.sigma, result.hardness, result.t_melt
         T = result.t_melt
 
         coef = getattr(result, "coef", {})
@@ -36,8 +37,8 @@ def generate_plots(result):
         Ni = result["composition"]["Ni"]
         Mo = result["composition"]["Mo"]
         Mn = result["composition"]["Mn"]
-      #  sigma = result["properties"]["sigma"]
-      #  hrc = result["properties"]["hrc"]
+        #  sigma = result["properties"]["sigma"]
+        #  hrc = result["properties"]["hrc"]
         T = result["properties"]["T"]
         coef = result.get("coef", {})
 
@@ -48,7 +49,9 @@ def generate_plots(result):
     elements = ["Cr", "Ni", "Mo", "Mn"]
     values = [Cr, Ni, Mo, Mn]
     # Заменяем None/NaN на 0
-    values = [0 if v is None or (isinstance(v, float) and np.isnan(v)) else v for v in values]
+    values = [
+        0 if v is None or (isinstance(v, float) and np.isnan(v)) else v for v in values
+    ]
     ax.bar(elements, values, color=["#e74c3c", "#3498db", "#9b59b6", "#2ecc71"])
     ax.set_title("Состав сплава (%)")
     plots.append(fig_to_base64(fig))
@@ -58,7 +61,7 @@ def generate_plots(result):
     if sum(values) > 0:
         ax.pie(values, labels=elements, autopct="%1.1f%%", startangle=90)
     else:
-        ax.text(0.5, 0.5, "Нет данных для графика", ha='center', va='center')
+        ax.text(0.5, 0.5, "Нет данных для графика", ha="center", va="center")
     ax.set_title("Доли элементов")
     plots.append(fig_to_base64(fig))
 

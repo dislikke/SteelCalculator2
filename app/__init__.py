@@ -1,4 +1,3 @@
-
 from flask import Flask
 from .extensions import db, migrate
 from .config import Config
@@ -13,9 +12,7 @@ from .routes.plots import plots_bp
 from .routes.report import report_bp
 
 
-
-
-def  create_app(config_class=Config):
+def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -27,11 +24,10 @@ def  create_app(config_class=Config):
     app.register_blueprint(plots_bp)
     app.register_blueprint(report_bp)
 
-
     db.init_app(app)
     migrate.init_app(app, db)
 
-   # with app.app_context():
+    # with app.app_context():
     #    db.create_all()
 
     return app

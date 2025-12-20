@@ -60,10 +60,22 @@ def form():
                 "t": float(request.form.get("t_req", 0)),
             }
             params["bounds"] = {
-                "Cr": (float(request.form.get("cr_min", 0)), float(request.form.get("cr_max", 0))),
-                "Ni": (float(request.form.get("ni_min", 0)), float(request.form.get("ni_max", 0))),
-                "Mo": (float(request.form.get("mo_min", 0)), float(request.form.get("mo_max", 0))),
-                "Mn": (float(request.form.get("mn_min", 0)), float(request.form.get("mn_max", 0))),
+                "Cr": (
+                    float(request.form.get("cr_min", 0)),
+                    float(request.form.get("cr_max", 0)),
+                ),
+                "Ni": (
+                    float(request.form.get("ni_min", 0)),
+                    float(request.form.get("ni_max", 0)),
+                ),
+                "Mo": (
+                    float(request.form.get("mo_min", 0)),
+                    float(request.form.get("mo_max", 0)),
+                ),
+                "Mn": (
+                    float(request.form.get("mn_min", 0)),
+                    float(request.form.get("mn_max", 0)),
+                ),
             }
 
         # --- Лимиты ---
@@ -73,13 +85,22 @@ def form():
         params["limits"] = {
             "sum_max": values["sum_max"],
             "sum_min": values["sum_min"],
-            "crni_max": values["crni_max"]
+            "crni_max": values["crni_max"],
         }
 
         # --- Дополнительные коэффициенты ---
-        coef_keys = ['sigma_base','sigma_Cr','sigma_Mo','sigma_CrMo',
-                     'hrc_base','hrc_Ni','hrc_Mn','hrc_NiMn',
-                     'T_base','T_drop']
+        coef_keys = [
+            "sigma_base",
+            "sigma_Cr",
+            "sigma_Mo",
+            "sigma_CrMo",
+            "hrc_base",
+            "hrc_Ni",
+            "hrc_Mn",
+            "hrc_NiMn",
+            "T_base",
+            "T_drop",
+        ]
         values["coef"] = {}
         for key in coef_keys:
             values["coef"][key] = float(request.form.get(key, 0))
@@ -147,9 +168,9 @@ def form():
                 limits={
                     "sum_min": values["sum_min"],
                     "sum_max": values["sum_max"],
-                    "crni_max": values["crni_max"]
+                    "crni_max": values["crni_max"],
                 },
-                req=params.get("req", {})
+                req=params.get("req", {}),
             )
 
             db.session.add(new_result)
@@ -162,18 +183,22 @@ def form():
                 "properties": properties,
                 "cost": result_data.get("cost", 0),
                 "coef": params.get("coef", {}),
-                "reasons": reasons
+                "reasons": reasons,
             }
 
             # --- Сообщение пользователю ---
             if reasons:
                 flash(
                     "⚠️ Не удалось достичь всех требований. "
-                    "Показан наиболее близкий результат. Причины: " + "; ".join(reasons),
-                    "warning"
+                    "Показан наиболее близкий результат. Причины: "
+                    + "; ".join(reasons),
+                    "warning",
                 )
             else:
-                flash("✅ Оптимизация выполнена успешно — найдено решение, удовлетворяющее всем требованиям!", "success")
+                flash(
+                    "✅ Оптимизация выполнена успешно — найдено решение, удовлетворяющее всем требованиям!",
+                    "success",
+                )
 
             return redirect(url_for("results.show", result_id=new_result.id))
 
@@ -193,7 +218,7 @@ def form():
             "coef": defaults.get("coef", {}),
             "sum_max": 6.0,
             "sum_min": 0.0,
-            "crni_max": 2.0
+            "crni_max": 2.0,
         }
 
     return render_template("form.html", variants=variants, values=values)

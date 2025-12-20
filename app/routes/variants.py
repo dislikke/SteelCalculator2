@@ -5,10 +5,12 @@ from ..models.variant import Variant
 
 variants_bp = Blueprint("variants", __name__, url_prefix="/variants")
 
+
 @variants_bp.route("/", methods=["GET"])
 def list_variants():
     variants = Variant.query.all()
     return render_template("variants/list.html", variants=variants)
+
 
 @variants_bp.route("/add", methods=["GET", "POST"])
 def add():
@@ -24,7 +26,7 @@ def add():
                 "hrc_Mn": request.form.get("hrc_Mn", 8),
                 "hrc_NiMn": request.form.get("hrc_NiMn", 2),
                 "T_base": request.form.get("T_base", 1530),
-                "T_drop": request.form.get("T_drop", 15)
+                "T_drop": request.form.get("T_drop", 15),
             }
             v = Variant(
                 name=request.form["name"],
@@ -46,7 +48,7 @@ def add():
                 sum_max=float(request.form.get("sum_max", 6.0)),
                 sum_min=float(request.form.get("sum_min", 0.0)),
                 crni_max=float(request.form.get("crni_max", 2.0)),
-                coef=coef
+                coef=coef,
             )
 
             db.session.add(v)
@@ -58,22 +60,50 @@ def add():
             flash(f"Ошибка при добавлении варианта: {str(e)}", "danger")
     return render_template("variants/add.html")
 
+
 @variants_bp.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit(id):
     v = Variant.query.get_or_404(id)
     if request.method == "POST":
         try:
             v.name = request.form["name"]
-            for field in ["cr_min", "cr_max", "ni_min", "ni_max", "mo_min", "mo_max", "mn_min", "mn_max",
-                          "cost_cr", "cost_ni", "cost_mo", "cost_mn", "sum_max", "sum_min", "crni_max"]:
+            for field in [
+                "cr_min",
+                "cr_max",
+                "ni_min",
+                "ni_max",
+                "mo_min",
+                "mo_max",
+                "mn_min",
+                "mn_max",
+                "cost_cr",
+                "cost_ni",
+                "cost_mo",
+                "cost_mn",
+                "sum_max",
+                "sum_min",
+                "crni_max",
+            ]:
                 setattr(v, field, float(request.form.get(field, 0)))
 
             v.sigma_req = float(request.form.get("sigma_req", 0))
             v.hard_req = float(request.form.get("hard_req", 0))
             v.t_req = float(request.form.get("t_req", 0))
-            v.coef = {k: request.form.get(k) for k in ["sigma_base","sigma_Cr","sigma_Mo","sigma_CrMo",
-                                                       "hrc_base","hrc_Ni","hrc_Mn","hrc_NiMn",
-                                                       "T_base","T_drop"]}
+            v.coef = {
+                k: request.form.get(k)
+                for k in [
+                    "sigma_base",
+                    "sigma_Cr",
+                    "sigma_Mo",
+                    "sigma_CrMo",
+                    "hrc_base",
+                    "hrc_Ni",
+                    "hrc_Mn",
+                    "hrc_NiMn",
+                    "T_base",
+                    "T_drop",
+                ]
+            }
             db.session.commit()
             flash("Вариант обновлён!", "success")
             return redirect(url_for("variants.list_variants"))
@@ -81,6 +111,7 @@ def edit(id):
             db.session.rollback()
             flash(f"Ошибка при обновлении варианта: {str(e)}", "danger")
     return render_template("variants/edit.html", v=v)
+
 
 @variants_bp.route("/delete/<int:id>", methods=["GET"])
 def delete(id):
@@ -93,4 +124,3 @@ def delete(id):
         db.session.rollback()
         flash(f"Ошибка при удалении варианта: {str(e)}", "danger")
     return redirect(url_for("variants.list_variants"))
-

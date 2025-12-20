@@ -46,7 +46,9 @@ def report(result_id):
         )
 
     if Cr * Ni > limits.get("crni_max", 2.0):
-        reasons.append(f"Cr×Ni ({Cr*Ni:.2f}) превышает максимум {limits.get('crni_max', 2.0)}")
+        reasons.append(
+            f"Cr×Ni ({Cr*Ni:.2f}) превышает максимум {limits.get('crni_max', 2.0)}"
+        )
 
     if sigma + EPS < req.get("sigma", 0):
         reasons.append(f"σ={sigma:.1f} меньше требуемого {req.get('sigma')}")
@@ -55,4 +57,6 @@ def report(result_id):
     if T + EPS < req.get("t", 0):
         reasons.append(f"T={T:.1f} меньше требуемого {req.get('t')}")
 
-    return render_template("report/list.html", result=result, plots=plots, reasons=reasons)
+    return render_template(
+        "report/list.html", result=result, plots=plots, reasons=reasons
+    )

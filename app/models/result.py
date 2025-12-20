@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from ..extensions import db
 from sqlalchemy.dialects.postgresql import JSONB  # если используешь PostgreSQL
 
+
 class Result(db.Model):
     __tablename__ = "results"
 
@@ -18,13 +19,17 @@ class Result(db.Model):
     hardness = db.Column(db.Float)
     t_melt = db.Column(db.Float)
 
-    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     variant = db.relationship("Variant", backref="results")
 
     # --- Новые поля для ручного ввода ---
-    limits = db.Column(JSONB, default={})  # {"sum_min": 0, "sum_max": 6, "crni_max": 2.0}
-    req = db.Column(JSONB, default={})     # {"sigma": ..., "hrc": ..., "t": ...}
+    limits = db.Column(
+        JSONB, default={}
+    )  # {"sum_min": 0, "sum_max": 6, "crni_max": 2.0}
+    req = db.Column(JSONB, default={})  # {"sigma": ..., "hrc": ..., "t": ...}
 
     def __repr__(self):
         return f"<Result Variant={self.variant_id} Cost={self.cost}>"

@@ -1,6 +1,7 @@
 from ..extensions import db
 from sqlalchemy.dialects.postgresql import JSON
 
+
 class Variant(db.Model):
     __tablename__ = "variants"
 
@@ -33,4 +34,3 @@ class Variant(db.Model):
 
     def __repr__(self):
         return f"<Variant {self.name}>"
-
