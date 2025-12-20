@@ -1,0 +1,43 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<h2>Список вариантов</h2>
+
+<a href="{{ url_for('variants.add') }}" class="btn btn-success mb-3">Добавить вариант</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Название</th>
+            <th>CR (min-max)</th>
+            <th>NI (min-max)</th>
+            <th>MO (min-max)</th>
+            <th>MN (min-max)</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in variants %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ v.name }}</td>
+            <td>{{ v.cr_min }} - {{ v.cr_max }}</td>
+            <td>{{ v.ni_min }} - {{ v.ni_max }}</td>
+            <td>{{ v.mo_min }} - {{ v.mo_max }}</td>
+            <td>{{ v.mn_min }} - {{ v.mn_max }}</td>
+            <td>
+                <a href="{{ url_for('variants.edit', id=v.id) }}" class="btn btn-primary btn-sm">Редактировать</a>
+                <a href="{{ url_for('variants.delete', id=v.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этот вариант?');">Удалить</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center">Варианты отсутствуют</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+

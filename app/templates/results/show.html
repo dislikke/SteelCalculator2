@@ -1,0 +1,63 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<!-- Результат в узкой карточке -->
+<div class="d-flex justify-content-center mt-4">
+  <div style="display: inline-block; max-width: 600px;">
+    <h2 class="text-center">Результат №{{ result.id }}</h2>
+
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <h5 class="card-title">Состав</h5>
+        <ul>
+          <li><b>Cr:</b> {{ "%.3f"|format(result.cr) }}</li>
+          <li><b>Ni:</b> {{ "%.3f"|format(result.ni) }}</li>
+          <li><b>Mo:</b> {{ "%.3f"|format(result.mo) }}</li>
+          <li><b>Mn:</b> {{ "%.3f"|format(result.mn) }}</li>
+        </ul>
+
+        <h5 class="card-title mt-3">Свойства</h5>
+        <ul>
+          <li><b>Предел прочности:</b> {{ "%.1f"|format(result.sigma) }}</li>
+          <li><b>Твердость HRC:</b> {{ "%.1f"|format(result.hardness) }}</li>
+          <li><b>Температура плавления:</b> {{ "%.1f"|format(result.t_melt) }}</li>
+        </ul>
+
+        <h5 class="card-title mt-3">Экономика</h5>
+        <p><b>Стоимость:</b> {{ "%.2f"|format(result.cost) }}</p>
+
+        <p class="text-muted">Дата расчета: {{ result.created_at.strftime("%d.%m.%Y %H:%M") }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alert с приближенными значениями -->
+{% if reasons and reasons|length > 0 %}
+<div class="d-flex justify-content-center mt-3">
+  <div style="display: inline-block; max-width: 600px;">
+    <div class="alert alert-warning">
+      <h5>Оптимизация не достигла всех требований. Показаны приближённые значения:</h5>
+      <ul>
+        {% for r in reasons %}
+          <li>{{ r }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Кнопки -->
+<div class="d-flex justify-content-center mt-4 gap-2">
+  <a href="{{ url_for('report.report', result_id=result.id) }}" class="btn btn-primary">
+    Смотреть отчет
+  </a>
+  <a href="{{ url_for('results.list_results') }}" class="btn btn-secondary">
+    ← Назад к списку
+  </a>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,14 @@
+
+<ul class="nav justify-content-center border-bottom pb-3 mb-3">
+    <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link px-2">Главная</a></li>
+    <li class="nav-item"><a href="{{ url_for('form.form') }}" class="nav-link px-2">Ввод данных</a></li>
+    <li class="nav-item"><a href="{{ url_for('results.list_results') }}" class="nav-link px-2">Результаты</a></li>
+    <li class="nav-item"><a href="{{ url_for('variants.list_variants') }}" class="nav-link px-2">Варианты</a></li>
+
+    <li class="nav-item"><a class="nav-link px-2" href="{{ url_for('plots.show_plots') }}">Визуализация</a></li>
+
+
+
+    <li class="nav-item"><a href="{{ url_for('main.about') }}" class="nav-link px-2">О проекте</a></li>
+</ul>
+<p class="text-center">© 2025 SteelCalculator</p>

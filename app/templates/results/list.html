@@ -1,0 +1,54 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Список результатов оптимизации</h2>
+
+  {% if results %}
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Вариант</th>
+        <th>Cr</th>
+        <th>Ni</th>
+        <th>Mo</th>
+        <th>Mn</th>
+        <th>Стоимость</th>
+        <th>Предел прочности</th>
+        <th>Твердость</th>
+        <th>T плавления</th>
+        <th>Дата</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in results %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.variant_id }}</td>
+        <td>{{ "%.3f"|format(r.cr) }}</td>
+        <td>{{ "%.3f"|format(r.ni) }}</td>
+        <td>{{ "%.3f"|format(r.mo) }}</td>
+        <td>{{ "%.3f"|format(r.mn) }}</td>
+        <td>{{ "%.2f"|format(r.cost) }}</td>
+        <td>{{ "%.1f"|format(r.sigma) }}</td>
+        <td>{{ "%.1f"|format(r.hardness) }}</td>
+        <td>{{ "%.1f"|format(r.t_melt) }}</td>
+        <td>{{ r.created_at.strftime("%d.%m.%Y %H:%M") }}</td>
+        <td>
+          <a href="{{ url_for('results.show', result_id=r.id) }}" class="btn btn-sm btn-outline-primary">
+            Подробнее
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="alert alert-info">Пока нет сохранённых результатов.</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+

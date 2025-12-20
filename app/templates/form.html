@@ -1,0 +1,149 @@
+{% extends "main/base.html" %}
+{% block title %}Форма оптимизации{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Оптимизация состава</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="post" action="{{ url_for('form.form') }}" class="row g-3">
+    <!-- Выбор готового варианта -->
+    <div class="col-12">
+      <label class="form-label" for="variant_id">
+        Выбрать готовый вариант (или оставить пустым для ручного ввода)
+      </label>
+      <select class="form-select" name="variant_id" id="variant_id">
+        <option value="">— Нет —</option>
+        {% for v in variants %}
+        <option value="{{ v.id }}" {% if values.get('variant_id')|default(0)|int == v.id %}selected{% endif %}>{{ v.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <hr>
+
+    <!-- Диапазоны -->
+    <h4>Диапазоны элементов (%)</h4>
+    {% for el in ['cr','ni','mo','mn'] %}
+      <div class="col-md-3">
+        <label class="form-label" for="{{ el }}_min">{{ el|upper }} min</label>
+        <input type="number" step="0.01" name="{{ el }}_min" id="{{ el }}_min" class="form-control" value="{{ values.get('bounds', {}).get(el, [0,0])[0] }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="{{ el }}_max">{{ el|upper }} max</label>
+        <input type="number" step="0.01" name="{{ el }}_max" id="{{ el }}_max" class="form-control" value="{{ values.get('bounds', {}).get(el, [0,0])[1] }}">
+      </div>
+    {% endfor %}
+
+    <!-- Цены -->
+    <h4>Цены (усл.ед на т.стали)</h4>
+    {% for el in ["cr","ni","mo","mn"] %}
+    <div class="col-md-3">
+      <label class="form-label" for="cost_{{ el }}">Цена {{ el|upper }}</label>
+      <input type="number" step="0.01" name="cost_{{ el }}" id="cost_{{ el }}" class="form-control" value="{{ values.get('cost', {}).get(el, 1.0) }}">
+    </div>
+    {% endfor %}
+
+    <!-- Требования -->
+    <h4>Требования</h4>
+    <div class="col-md-4">
+      <label class="form-label" for="sigma_req">Прочность σ (МПа)</label>
+      <input type="number" step="0.1" name="sigma_req" id="sigma_req" class="form-control" value="{{ values.get('req', {}).get('sigma', 0) }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="hard_req">Твёрдость HRC</label>
+      <input type="number" step="0.1" name="hard_req" id="hard_req" class="form-control" value="{{ values.get('req', {}).get('hrc', 0) }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="t_req">Температура плавления (°C)</label>
+      <input type="number" step="0.1" name="t_req" id="t_req" class="form-control" value="{{ values.get('req', {}).get('t', 0) }}">
+    </div>
+
+    <!-- Лимиты -->
+    <h4>Лимиты</h4>
+    <div class="col-md-3">
+      <label class="form-label" for="sum_max">Макс. сумма добавок (%)</label>
+      <input type="number" step="0.1" name="sum_max" id="sum_max" class="form-control" value="{{ values.get('sum_max', 6.0) }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="sum_min">Мин. сумма добавок (%)</label>
+      <input type="number" step="0.1" name="sum_min" id="sum_min" class="form-control" value="{{ values.get('sum_min', 0.0) }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="crni_max">Макс. Cr·Ni</label>
+      <input type="number" step="0.1" name="crni_max" id="crni_max" class="form-control" value="{{ values.get('crni_max', 2.0) }}">
+    </div>
+
+    <hr>
+
+    <!-- Дополнительные коэффициенты -->
+    <p>
+      <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#coeffSection" role="button" aria-expanded="false" aria-controls="coeffSection">
+        ⚙️ Дополнительные коэффициенты
+      </a>
+    </p>
+
+    <div class="collapse" id="coeffSection">
+      <div class="card card-body bg-dark text-light border rounded">
+        <h5>Прочность</h5>
+        <div class="row g-3">
+          {% for key in ['sigma_base','sigma_Cr','sigma_Mo','sigma_CrMo'] %}
+          <div class="col-md-3">
+            <label class="form-label" for="{{ key }}">{{ key }}</label>
+            <input type="number" step="1" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ values.get('coef', {}).get(key, 0) }}">
+          </div>
+          {% endfor %}
+        </div>
+
+        <h5 class="mt-4">Твёрдость</h5>
+        <div class="row g-3">
+          {% for key in ['hrc_base','hrc_Ni','hrc_Mn','hrc_NiMn'] %}
+          <div class="col-md-3">
+            <label class="form-label" for="{{ key }}">{{ key }}</label>
+            <input type="number" step="1" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ values.get('coef', {}).get(key, 0) }}">
+          </div>
+          {% endfor %}
+        </div>
+
+        <h5 class="mt-4">Температура</h5>
+        <div class="row g-3">
+          {% for key in ['T_base','T_drop'] %}
+          <div class="col-md-3">
+            <label class="form-label" for="{{ key }}">{{ key }}</label>
+            <input type="number" step="0.1" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ values.get('coef', {}).get(key, 0) }}">
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-success">Рассчитать</button>
+      <button type="reset" class="btn btn-secondary">Сбросить</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

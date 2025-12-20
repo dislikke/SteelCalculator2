@@ -1,0 +1,27 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Визуализация результата</h2>
+
+    {% if message %}
+        <div class="alert alert-warning">{{ message }}</div>
+    {% else %}
+        <div class="row">
+            {% for plot in plots %}
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <img src="data:image/png;base64,{{ plot }}" class="card-img-top" alt="Plot"
+                             style="height: 250px; object-fit: contain;">
+                        <div class="card-body text-center">
+                            <a href="data:image/png;base64,{{ plot }}" download="plot.png" class="btn btn-primary">
+                                Скачать график
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

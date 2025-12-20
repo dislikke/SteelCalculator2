@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Оптимизация состава инструментальной легированной стали</h1>
+<p class="lead text-center">Система подбирает минимально дорогой состав, удовлетворяющий требованиям по прочности, твёрдости и температуре плавления.</p>
+
+<div class="d-flex justify-content-center gap-3">
+    <a href="{{ url_for('form.form') }}" class="btn btn-primary btn-lg">Начать расчёт</a>
+    <a href="{{ url_for('main.about') }}" class="btn btn-outline-secondary btn-lg">О проекте</a>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Оптимизация состава стали</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+</head>
+<body>
+
+<header class="header">{% include 'main/_header.html' %}</header>
+<div class="page">
+    <main class="content">{% block content %}{% endblock %}</main>
+    <footer class="py-3 my-4">{% include 'main/_footer.html' %}</footer>
+</div>
+
+  <script src="{{ url_for('static', filename='js/libs/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

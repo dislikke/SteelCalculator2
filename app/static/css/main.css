@@ -1,0 +1,40 @@
+@import url('fonts.css');
+
+body {
+    background-color: #212121;
+    color: #ffffff;
+}
+
+.page {
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    padding: 20px;
+}
+
+
+
+.content {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    flex: 1 1 auto;
+}
+
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+}
+
+.header__img {
+    display: block;
+    height: 48px;
+    width: 48px;
+}
