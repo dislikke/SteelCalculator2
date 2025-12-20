@@ -1,0 +1,4 @@
+# Конфигурация Ruff
+exclude = [
+  "migrations",
+]

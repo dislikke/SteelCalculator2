@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from ..extensions import db
 from ..models.variant import Variant
-import json
+
 
 variants_bp = Blueprint("variants", __name__, url_prefix="/variants")
 

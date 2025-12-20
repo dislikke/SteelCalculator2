@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template
-from flask import Blueprint, render_template
 from app.extensions import db
 from app.models.requirement import Requirement
 

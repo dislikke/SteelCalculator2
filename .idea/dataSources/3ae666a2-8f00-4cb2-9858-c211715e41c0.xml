@@ -11,9 +11,8 @@
 4||10|c|G
 4||10|C|G
 4||10|T|G</Grants>
-      <IntrospectionStateNumber>749</IntrospectionStateNumber>
       <ServerVersion>16.11</ServerVersion>
-      <StartupTime>1766185383</StartupTime>
+      <StartupTime>1766258512</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -707,7 +706,6 @@ false posixrules
 13276||10|C|G
 13276||-9223372036854775808|U|G
 13276||10|U|G</Grants>
-      <IntrospectionStateNumber>749</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>diana</OwnerName>
     </database>
@@ -4131,7 +4129,6 @@ false posixrules
     <schema id="264" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>749</IntrospectionStateNumber>
       <LastIntrospectionLocalTimestamp>2025-12-19.23:04:15</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>524</StateNumber>

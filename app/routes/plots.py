@@ -34,8 +34,8 @@ def generate_plots(result):
         Ni = result["composition"]["Ni"]
         Mo = result["composition"]["Mo"]
         Mn = result["composition"]["Mn"]
-        sigma = result["properties"]["sigma"]
-        hrc = result["properties"]["hrc"]
+      #  sigma = result["properties"]["sigma"]
+      #  hrc = result["properties"]["hrc"]
         T = result["properties"]["T"]
         coef = result.get("coef", {})
 

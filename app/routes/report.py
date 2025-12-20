@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from ..models.result import Result
-from ..models.variant import Variant
+
 from .plots import generate_plots
 
 report_bp = Blueprint("report", __name__, url_prefix="/report")
