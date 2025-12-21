@@ -1,20 +1,12 @@
 services:
-
-
   web:
-    # Важно: Jenkins сам соберёт image с нужным тегом
     image: steel_web:${IMAGE_TAG}
     container_name: steel_web
+    ports:
+      - "5002:5000"
     env_file:
       - ../env
     environment:
-      DATABASE_URL:
-        ${DATABASE_URL}
-    ports:
-      - "5002:5000"
-    depends_on:
-      db:
-        condition: service_healthy
+      DATABASE_URL: postgresql+psycopg2://diana:20041902@host.docker.internal:5540/db
+    restart: unless-stopped
 
-volumes:
-  postgres-data:
