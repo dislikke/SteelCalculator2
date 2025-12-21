@@ -41,15 +41,23 @@ pipeline {
         '''
       }
     }
-    stage('Deploy (Docker Compose)') {
+    stage('Deploy (Docker Run)') {
       steps {
         sh '''
-          echo "Deploying application via Docker Compose..."
-          docker compose down || true
-          docker compose up -d --build
+          echo "Deploying application via docker run..."
+
+          docker rm -f steelcalculator_prod || true
+
+          docker run -d \
+            --name steelcalculator_prod \
+            -p 5000:5000 \
+            steelcalculator:jenkins
+
+          echo "Application deployed on http://localhost:5000"
         '''
       }
     }
+
 
 
 
