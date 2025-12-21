@@ -18,9 +18,9 @@ pipeline {
       steps {
         sh '''
           docker rm -f steelcalculator_test || true
-          docker run -d --name steelcalculator_test -p 5000:5000 steelcalculator:jenkins
+          docker run -d --name steelcalculator_test -p 5050:5000 steelcalculator:jenkins
           for i in $(seq 1 20); do
-            if curl -fsS http://localhost:5000/ > /dev/null; then
+            if curl -fsS http://localhost:5050/ > /dev/null; then
               echo "OK: app is up"
               exit 0
             fi
