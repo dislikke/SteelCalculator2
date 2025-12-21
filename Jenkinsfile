@@ -45,10 +45,10 @@ pipeline {
       steps {
         sh '''
           set -e
-          echo "Waiting for app http://127.0.0.1:5001/ ..."
+          echo "Waiting for app http://127.0.0.1:5002/ ..."
 
           for i in $(seq 1 40); do
-            if curl -fsS "http://127.0.0.1:5001/" >/dev/null; then
+            if curl -fsS "http://127.0.0.1:5002/" >/dev/null; then
               echo "OK: app is up"
               exit 0
             fi
