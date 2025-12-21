@@ -12,6 +12,7 @@ from .routes.plots import plots_bp
 from .routes.report import report_bp
 from prometheus_flask_exporter import PrometheusMetrics
 
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -30,12 +31,7 @@ def create_app(config_class=Config):
     # with app.app_context():
     #    db.create_all()
     metrics = PrometheusMetrics(app)
-    metrics.info(
-        "app_info",
-        "SteelCalculator application info",
-        version="1.0.0"
-    )
-
-
+    metrics.info("app_info", "SteelCalculator application info", version="1.0.0")
+    metrics.defaults()
 
     return app
