@@ -45,10 +45,10 @@ pipeline {
       steps {
         sh '''
           set -e
-          echo "Waiting for app http://127.0.0.1:5002/ ..."
+          echo "Waiting for app inside steel_web (http://127.0.0.1:5000/) ..."
 
           for i in $(seq 1 40); do
-            if curl -fsS "http://127.0.0.1:5002/" >/dev/null; then
+            if docker exec steel_web python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/', timeout=2).read(); print('OK')" 2>/dev/null; then
               echo "OK: app is up"
               exit 0
             fi
@@ -64,6 +64,7 @@ pipeline {
         '''
       }
     }
+
   }
 }
 
