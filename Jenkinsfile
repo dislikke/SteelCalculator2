@@ -50,13 +50,14 @@ pipeline {
 
           docker run -d \
             --name steelcalculator_prod \
-            -p 5000:5000 \
+            -p 5001:5000 \
             steelcalculator:jenkins
 
-          echo "Application deployed on http://localhost:5000"
+          echo "Application deployed on http://localhost:5001"
         '''
       }
     }
+
 
 
 
