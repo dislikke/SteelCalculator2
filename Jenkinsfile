@@ -57,6 +57,47 @@ pipeline {
         '''
       }
     }
+    stage('Deploy (Docker Run + Postgres)') {
+      steps {
+        sh '''
+          echo "Deploying Postgres + App..."
+
+          # Network (create if not exists)
+          docker network create steel_net || true
+
+          # Postgres
+          docker rm -f steelcalculator_db_prod || true
+          docker run -d \
+            --name steelcalculator_db_prod \
+            --network steel_net \
+            -e POSTGRES_DB=db \
+            -e POSTGRES_USER=diana \
+            -e POSTGRES_PASSWORD=20041902 \
+            -p 5540:5432 \
+            -v steel_pgdata:/var/lib/postgresql/data \
+            postgres:16
+
+          # App (deploy on 5001 to avoid conflicts)
+          docker rm -f steelcalculator_prod || true
+          docker run -d \
+            --name steelcalculator_prod \
+            --network steel_net \
+            -p 5001:5000 \
+            -e POSTGRES_DB=db \
+            -e POSTGRES_USER=diana \
+            -e POSTGRES_PASSWORD=20041902 \
+            -e POSTGRES_HOST=steelcalculator_db_prod \
+            -e POSTGRES_PORT=5432 \
+            steelcalculator:jenkins
+
+          echo "Deployed:"
+          echo " - App: http://localhost:5001"
+          echo " - DB:  localhost:5540 (DataGrip)"
+        '''
+      }
+    }
+
+
 
 
 
