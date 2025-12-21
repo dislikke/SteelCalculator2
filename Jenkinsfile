@@ -40,23 +40,7 @@ pipeline {
         '''
       }
     }
-    stage('DB migrate') {
-      steps {
-        sh '''
-          set -e
-          cd deploy
 
-          # узнаём имя сети, которую создал compose
-          NET=$(docker network ls --format "{{.Name}}" | grep -E '^deploy_default$' || true)
-          if [ -z "$NET" ]; then
-            NET="deploy_default"
-          fi
-
-          # запускаем миграцию отдельным контейнером с теми же env
-          docker run --rm --network "$NET" --env-file ../env steel_web:${IMAGE_TAG} flask db upgrade
-        '''
-      }
-    }
 
 
 
