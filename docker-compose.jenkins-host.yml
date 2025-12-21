@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: jenkins/Dockerfile
+    image: steelcalculator-jenkins:latest
     container_name: jenkins
     user: root
     ports:
