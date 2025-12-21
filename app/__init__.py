@@ -32,6 +32,6 @@ def create_app(config_class=Config):
     #    db.create_all()
     metrics = PrometheusMetrics(app)
     metrics.info("app_info", "SteelCalculator application info", version="1.0.0")
-    metrics.defaults()
+
 
     return app
