@@ -1,4 +1,17 @@
 services:
+  db:
+    image: postgres:16
+    container_name: steel_db
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: diana
+      POSTGRES_PASSWORD: 20041902
+    ports:
+      - "5540:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   web:
     image: steel_web:${IMAGE_TAG}
     container_name: steel_web
@@ -7,11 +20,15 @@ services:
     env_file:
       - ../.env
     environment:
-      DATABASE_URL: postgresql+psycopg2://diana:20041902@host.docker.internal:5432/db
+      DATABASE_URL: postgresql+psycopg2://diana:20041902@db:5432/db
       FLASK_APP: "app:create_app"
       FLASK_RUN_HOST: "0.0.0.0"
       FLASK_RUN_PORT: "5000"
       FLASK_DEBUG: "0"
-      command: flask run
+    depends_on:
+      - db
     restart: unless-stopped
+
+volumes:
+  pg_data:
 
