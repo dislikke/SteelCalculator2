@@ -44,7 +44,7 @@ pipeline {
       steps {
         sh '''
           set -e
-          docker exec steel_web flask db upgrade
+          docker exec steel_web flask db stamp head
         '''
       }
     }
