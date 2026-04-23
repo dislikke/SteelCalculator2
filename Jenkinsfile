@@ -40,7 +40,14 @@ pipeline {
         '''
       }
     }
-
+    stage('Migrate DB') {
+      steps {
+        sh '''
+          set -e
+          docker exec steel_web flask db upgrade
+        '''
+      }
+    }
 
 
 
