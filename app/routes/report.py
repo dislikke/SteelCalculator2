@@ -1,16 +1,18 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, abort, redirect, url_for, flash
 from ..models.result import Result
-
+from ..utils.auth import login_required
 from .plots import generate_plots
 
 report_bp = Blueprint("report", __name__, url_prefix="/report")
 
 
 @report_bp.route("/<int:result_id>")
+@login_required
 def report(result_id):
-    result = Result.query.get(result_id)
-    if not result:
-        return "Результат не найден", 404
+    result = Result.query.get_or_404(result_id)
+
+    if result.user_id != session["user_id"]:
+        abort(403)
 
     plots = generate_plots(result)
 
@@ -18,7 +20,7 @@ def report(result_id):
     limits = result.limits or {"sum_min": 0.0, "sum_max": 6.0, "crni_max": 2.0}
     req = result.req or {"sigma": 0.0, "hrc": 0.0, "t": 0.0}
 
-    # Если результат привязан к Variant, можем использовать его требования
+    # Если результат привязан к Variant, можно использовать его требования
     if result.variant_id and result.variant:
         variant = result.variant
         req = {
@@ -36,7 +38,7 @@ def report(result_id):
     hrc = result.hardness
     T = result.t_melt
 
-    EPS = 0.1  # допуск
+    EPS = 0.1
     reasons = []
 
     sum_additives = Cr + Ni + Mo + Mn
@@ -47,7 +49,7 @@ def report(result_id):
 
     if Cr * Ni > limits.get("crni_max", 2.0):
         reasons.append(
-            f"Cr×Ni ({Cr*Ni:.2f}) превышает максимум {limits.get('crni_max', 2.0)}"
+            f"Cr×Ni ({Cr * Ni:.2f}) превышает максимум {limits.get('crni_max', 2.0)}"
         )
 
     if sigma + EPS < req.get("sigma", 0):
@@ -58,5 +60,31 @@ def report(result_id):
         reasons.append(f"T={T:.1f} меньше требуемого {req.get('t')}")
 
     return render_template(
-        "report/list.html", result=result, plots=plots, reasons=reasons
+        "report/list.html",
+        result=result,
+        plots=plots,
+        reasons=reasons,
+        limits=limits,
+        req=req,
+    )
+@report_bp.route("/temp")
+def temp_report():
+    result = session.get("last_result")
+
+    if not result:
+        flash("Временный результат не найден", "warning")
+        return redirect(url_for("form.form"))
+
+    plots = generate_plots(result)
+    reasons = result.get("reasons", [])
+    limits = result.get("limits", {})
+    req = result.get("req", {})
+
+    return render_template(
+        "report/temp.html",
+        result=result,
+        plots=plots,
+        reasons=reasons,
+        limits=limits,
+        req=req,
     )

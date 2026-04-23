@@ -8,6 +8,9 @@ class Variant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
 
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user = db.relationship("User", backref="variants")
+
     cr_min = db.Column(db.Float)
     cr_max = db.Column(db.Float)
     ni_min = db.Column(db.Float)

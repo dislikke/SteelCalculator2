@@ -5,7 +5,7 @@ services:
     ports:
       - "5002:5000"
     env_file:
-      - ../env
+      - ../.env
     environment:
       DATABASE_URL: postgresql+psycopg2://diana:20041902@host.docker.internal:5540/db
       FLASK_APP: "app:create_app"

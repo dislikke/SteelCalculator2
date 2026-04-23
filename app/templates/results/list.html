@@ -1,54 +1,230 @@
 {% extends "main/base.html" %}
 
+{% macro sort_link(label, field) -%}
+  {% set new_direction = "asc" if sort != field or direction == "desc" else "desc" %}
+  <a
+    href="{{ url_for('results.list_results', q=q, date_from=date_from, date_to=date_to, sort=field, direction=new_direction) }}"
+    class="text-decoration-none text-reset"
+  >
+    {{ label }}
+    {% if sort == field %}
+      {% if direction == "asc" %}
+        ↑
+      {% else %}
+        ↓
+      {% endif %}
+    {% endif %}
+  </a>
+{%- endmacro %}
+
 {% block content %}
 <div class="container mt-4">
-  <h2 class="mb-4">Список результатов оптимизации</h2>
+  <h2 class="mb-4 text-center">Список результатов оптимизации</h2>
+
+  {% if export_error %}
+    <div class="alert alert-warning">{{ export_error }}</div>
+  {% endif %}
 
   {% if results %}
-  <table class="table table-hover align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th>
-        <th>Вариант</th>
-        <th>Cr</th>
-        <th>Ni</th>
-        <th>Mo</th>
-        <th>Mn</th>
-        <th>Стоимость</th>
-        <th>Предел прочности</th>
-        <th>Твердость</th>
-        <th>T плавления</th>
-        <th>Дата</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for r in results %}
-      <tr>
-        <td>{{ r.id }}</td>
-        <td>{{ r.variant_id }}</td>
-        <td>{{ "%.3f"|format(r.cr) }}</td>
-        <td>{{ "%.3f"|format(r.ni) }}</td>
-        <td>{{ "%.3f"|format(r.mo) }}</td>
-        <td>{{ "%.3f"|format(r.mn) }}</td>
-        <td>{{ "%.2f"|format(r.cost) }}</td>
-        <td>{{ "%.1f"|format(r.sigma) }}</td>
-        <td>{{ "%.1f"|format(r.hardness) }}</td>
-        <td>{{ "%.1f"|format(r.t_melt) }}</td>
-        <td>{{ r.created_at.strftime("%d.%m.%Y %H:%M") }}</td>
-        <td>
-          <a href="{{ url_for('results.show', result_id=r.id) }}" class="btn btn-sm btn-outline-primary">
-            Подробнее
+  <form method="post" action="{{ url_for('results.export_results') }}">
+    <div class="results-filters mx-auto mb-4" style="max-width: 1130px;">
+      <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+        <div>
+          <label for="q" class="form-label">Поиск</label>
+          <input
+            type="text"
+            id="q"
+            name="q"
+            class="form-control"
+            placeholder="ID результата или название варианта"
+            value="{{ q or '' }}"
+            style="width: 320px;"
+          >
+        </div>
+
+        <div>
+          <label for="date_from" class="form-label">Дата с</label>
+          <input
+            type="date"
+            id="date_from"
+            name="date_from"
+            class="form-control"
+            value="{{ date_from or '' }}"
+            style="width: 150px;"
+          >
+        </div>
+
+        <div>
+          <label for="date_to" class="form-label">Дата по</label>
+          <input
+            type="date"
+            id="date_to"
+            name="date_to"
+            class="form-control"
+            value="{{ date_to or '' }}"
+            style="width: 150px;"
+          >
+        </div>
+
+        <div class="d-flex gap-2">
+          <button
+            type="submit"
+            formaction="{{ url_for('results.list_results') }}"
+            formmethod="get"
+            class="btn btn-outline-light px-4"
+          >
+            Найти
+          </button>
+          <a href="{{ url_for('results.list_results') }}" class="btn btn-outline-secondary px-4">
+            Сбросить
           </a>
-        </td>
-      </tr>
+
+
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-end gap-3">
+        <div>
+          <label for="export_mode" class="form-label">Экспорт</label>
+          <select id="export_mode" name="export_mode" class="form-select" style="width: 250px;">
+            <option value="all">Все результаты по фильтру</option>
+            <option value="selected">Только выбранные</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="variants_mode" class="form-label">Варианты в экспорте</label>
+          <select id="variants_mode" name="variants_mode" class="form-select" style="width: 220px;">
+            <option value="related">Только связанные</option>
+            <option value="all">Все мои варианты</option>
+            <option value="none">Не включать</option>
+          </select>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-outline-primary px-4">
+            Экспорт в Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap d-flex justify-content-center">
+      <table class="table table-hover align-middle mx-auto">
+        <thead class="table-light">
+          <tr>
+            <th>
+              <input type="checkbox" id="select-all">
+            </th>
+            <th style="min-width: 50px;">{{ sort_link("ID", "id") }}</th>
+            <th style="min-width: 120px;">Вариант</th>
+            <th style="min-width: 65px;">Cr, %</th>
+            <th style="min-width: 65px;">Ni, %</th>
+            <th style="min-width: 65px;">Mo, %</th>
+            <th style="min-width: 65px;">Mn, %</th>
+            <th style="min-width: 115px;">{{ sort_link("Стоимость", "cost") }}</th>
+            <th style="min-width: 160px;">{{ sort_link("Прочность, МПа", "sigma") }}</th>
+            <th style="min-width: 155px;">{{ sort_link("Твёрдость, HRC", "hardness") }}</th>
+            <th style="min-width: 155px;">{{ sort_link("T плавления, °C", "t_melt") }}</th>
+            <th style="min-width: 145px;">{{ sort_link("Дата", "created_at") }}</th>
+            <th style="min-width: 120px;">Действия</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td>
+              <input
+                type="checkbox"
+                name="selected_result_ids"
+                value="{{ r.id }}"
+                class="result-checkbox"
+              >
+            </td>
+            <td>{{ r.id }}</td>
+            <td>{{ r.variant.name if r.variant else "—" }}</td>
+            <td>{{ "%.3f"|format(r.cr) }}</td>
+            <td>{{ "%.3f"|format(r.ni) }}</td>
+            <td>{{ "%.3f"|format(r.mo) }}</td>
+            <td>{{ "%.3f"|format(r.mn) }}</td>
+            <td>{{ "%.2f"|format(r.cost) }}</td>
+            <td>{{ "%.1f"|format(r.sigma) }}</td>
+            <td>{{ "%.1f"|format(r.hardness) }}</td>
+            <td>{{ "%.1f"|format(r.t_melt) }}</td>
+            <td>{{ r.created_at.strftime("%d.%m.%Y %H:%M") }}</td>
+            <td>
+              <a href="{{ url_for('results.show', result_id=r.id) }}" class="btn btn-sm btn-outline-primary">
+                Подробнее
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </form>
+
+  {% if pagination and pagination.pages > 1 %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if pagination.has_prev %}
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="{{ url_for('results.list_results', page=pagination.prev_num, q=q, date_from=date_from, date_to=date_to, sort=sort, direction=direction) }}"
+          >
+            Назад
+          </a>
+        </li>
+      {% endif %}
+
+      {% for p in pagination.iter_pages() %}
+        {% if p %}
+          <li class="page-item {% if p == pagination.page %}active{% endif %}">
+            <a
+              class="page-link"
+              href="{{ url_for('results.list_results', page=p, q=q, date_from=date_from, date_to=date_to, sort=sort, direction=direction) }}"
+            >
+              {{ p }}
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">…</span>
+          </li>
+        {% endif %}
       {% endfor %}
-    </tbody>
-  </table>
+
+      {% if pagination.has_next %}
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="{{ url_for('results.list_results', page=pagination.next_num, q=q, date_from=date_from, date_to=date_to, sort=sort, direction=direction) }}"
+          >
+            Вперёд
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const selectAll = document.getElementById("select-all");
+      const checkboxes = document.querySelectorAll(".result-checkbox");
+
+      if (selectAll) {
+        selectAll.addEventListener("change", function () {
+          checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        });
+      }
+    });
+  </script>
+
   {% else %}
     <div class="alert alert-info">Пока нет сохранённых результатов.</div>
   {% endif %}
 </div>
 {% endblock %}
-
-

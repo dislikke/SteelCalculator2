@@ -7,6 +7,7 @@ class Result(db.Model):
     __tablename__ = "results"
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     variant_id = db.Column(db.Integer, db.ForeignKey("variants.id"), nullable=True)
 
     cr = db.Column(db.Float)
@@ -23,6 +24,7 @@ class Result(db.Model):
         db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
 
+    user = db.relationship("User", backref="results")
     variant = db.relationship("Variant", backref="results")
 
     # --- Новые поля для ручного ввода ---

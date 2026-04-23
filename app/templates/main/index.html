@@ -2,11 +2,89 @@
 {% block title %}Главная страница{% endblock %}
 
 {% block content %}
-<h1 class="text-center">Оптимизация состава инструментальной легированной стали</h1>
-<p class="lead text-center">Система подбирает минимально дорогой состав, удовлетворяющий требованиям по прочности, твёрдости и температуре плавления.</p>
+<div class="home-hero">
+    <h1 class="text-center">Оптимизация состава инструментальной легированной стали</h1>
+    <p class="lead text-center">
+        Система подбирает минимально дорогой состав, удовлетворяющий требованиям по прочности,
+        твёрдости и температуре плавления.
+    </p>
 
-<div class="d-flex justify-content-center gap-3">
-    <a href="{{ url_for('form.form') }}" class="btn btn-primary btn-lg">Начать расчёт</a>
-    <a href="{{ url_for('main.about') }}" class="btn btn-outline-secondary btn-lg">О проекте</a>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="{{ url_for('form.form') }}" class="btn btn-primary btn-lg">Начать расчёт</a>
+        <a href="{{ url_for('main.about') }}" class="btn btn-outline-secondary btn-lg">О проекте</a>
+    </div>
+
+    <div class="hero-features mt-5">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card__icon">₽</div>
+                    <h5 class="feature-card__title">Минимизация стоимости</h5>
+                    <p class="feature-card__text">
+                        Система подбирает состав сплава с минимальной стоимостью при заданных ограничениях.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card__icon">σ</div>
+                    <h5 class="feature-card__title">Контроль свойств</h5>
+                    <p class="feature-card__text">
+                        Учитываются требования по прочности, твёрдости и температуре плавления.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card__icon">XLS</div>
+                    <h5 class="feature-card__title">Работа с Excel</h5>
+                    <p class="feature-card__text">
+                        Варианты и результаты можно сохранять, экспортировать и загружать из Excel.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="home-steps mt-5">
+    <h3 class="text-center mb-4">Как это работает</h3>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card__icon">1</div>
+                    <h5 class="feature-card__title">Ввод данных</h5>
+                    <p class="feature-card__text">
+                        Пользователь задаёт диапазоны содержания элементов, требования к свойствам
+                        и технологические ограничения.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card__icon">2</div>
+                    <h5 class="feature-card__title">Оптимизация состава</h5>
+                    <p class="feature-card__text">
+                        Система рассчитывает состав сплава, удовлетворяющий заданным условиям
+                        и минимизирующий стоимость.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-card__icon">3</div>
+                    <h5 class="feature-card__title">Анализ результата</h5>
+                    <p class="feature-card__text">
+                        Полученный результат можно сохранить, визуализировать и экспортировать
+                        в Excel для дальнейшей работы.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -2,6 +2,7 @@
 {% block title %}Форма оптимизации{% endblock %}
 {% block content %}
 <div class="container mt-4">
+<div class="section-card">
   <h2>Оптимизация состава</h2>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -16,7 +17,8 @@
   {% endwith %}
 
   <form method="post" action="{{ url_for('form.form') }}" class="row g-3">
-    <!-- Выбор готового варианта -->
+    <input type="hidden" name="use_selected_variant" id="use_selected_variant" value="0">
+      <!-- Выбор готового варианта -->
     <div class="col-12">
       <label class="form-label" for="variant_id">
         Выбрать готовый вариант (или оставить пустым для ручного ввода)
@@ -32,23 +34,24 @@
     <hr>
 
     <!-- Диапазоны -->
+    {% set el_labels = {'cr': 'Cr', 'ni': 'Ni', 'mo': 'Mo', 'mn': 'Mn'} %}
     <h4>Диапазоны элементов (%)</h4>
     {% for el in ['cr','ni','mo','mn'] %}
       <div class="col-md-3">
-        <label class="form-label" for="{{ el }}_min">{{ el|upper }} min</label>
+        <label class="form-label" for="{{ el }}_min">{{ el_labels[el] }} min</label>
         <input type="number" step="0.01" name="{{ el }}_min" id="{{ el }}_min" class="form-control" value="{{ values.get('bounds', {}).get(el, [0,0])[0] }}">
       </div>
       <div class="col-md-3">
-        <label class="form-label" for="{{ el }}_max">{{ el|upper }} max</label>
+        <label class="form-label" for="{{ el }}_max">{{ el_labels[el] }} max</label>
         <input type="number" step="0.01" name="{{ el }}_max" id="{{ el }}_max" class="form-control" value="{{ values.get('bounds', {}).get(el, [0,0])[1] }}">
       </div>
     {% endfor %}
 
     <!-- Цены -->
-    <h4>Цены (усл.ед на т.стали)</h4>
+    <h4>Стоимость элементов (усл. ед. на т стали)</h4>
     {% for el in ["cr","ni","mo","mn"] %}
     <div class="col-md-3">
-      <label class="form-label" for="cost_{{ el }}">Цена {{ el|upper }}</label>
+      <label class="form-label" for="cost_{{ el }}">Стоимость {{ el_labels[el] }}</label>
       <input type="number" step="0.01" name="cost_{{ el }}" id="cost_{{ el }}" class="form-control" value="{{ values.get('cost', {}).get(el, 1.0) }}">
     </div>
     {% endfor %}
@@ -56,30 +59,78 @@
     <!-- Требования -->
     <h4>Требования</h4>
     <div class="col-md-4">
-      <label class="form-label" for="sigma_req">Прочность σ (МПа)</label>
+      <label class="form-label" for="sigma_req">
+  Прочность σ (МПа)
+  <span
+    class="hint-icon"
+    data-bs-toggle="tooltip"
+    data-bs-placement="top"
+    title="Минимально допустимое значение прочности сплава."
+      >?</span>
+    </label>
       <input type="number" step="0.1" name="sigma_req" id="sigma_req" class="form-control" value="{{ values.get('req', {}).get('sigma', 0) }}">
     </div>
     <div class="col-md-4">
-      <label class="form-label" for="hard_req">Твёрдость HRC</label>
+      <label class="form-label" for="hard_req">
+      Твёрдость HRC
+      <span
+        class="hint-icon"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="Минимально допустимое значение твёрдости по шкале HRC."
+      >?</span>
+    </label>
       <input type="number" step="0.1" name="hard_req" id="hard_req" class="form-control" value="{{ values.get('req', {}).get('hrc', 0) }}">
     </div>
     <div class="col-md-4">
-      <label class="form-label" for="t_req">Температура плавления (°C)</label>
+      <label class="form-label" for="t_req">
+      Температура плавления (°C)
+      <span
+        class="hint-icon"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="Минимально допустимая температура плавления сплава."
+      >?</span>
+    </label>
       <input type="number" step="0.1" name="t_req" id="t_req" class="form-control" value="{{ values.get('req', {}).get('t', 0) }}">
     </div>
 
     <!-- Лимиты -->
     <h4>Лимиты</h4>
     <div class="col-md-3">
-      <label class="form-label" for="sum_max">Макс. сумма добавок (%)</label>
+      <label class="form-label" for="sum_max">
+      Макс. сумма добавок (%)
+      <span
+        class="hint-icon"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="Максимальная суммарная доля легирующих элементов Cr, Ni, Mo и Mn."
+      >?</span>
+    </label>
       <input type="number" step="0.1" name="sum_max" id="sum_max" class="form-control" value="{{ values.get('sum_max', 6.0) }}">
     </div>
     <div class="col-md-3">
-      <label class="form-label" for="sum_min">Мин. сумма добавок (%)</label>
+      <label class="form-label" for="sum_min">
+      Мин. сумма добавок (%)
+      <span
+        class="hint-icon"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="Минимальная суммарная доля легирующих элементов Cr, Ni, Mo и Mn."
+      >?</span>
+    </label>
       <input type="number" step="0.1" name="sum_min" id="sum_min" class="form-control" value="{{ values.get('sum_min', 0.0) }}">
     </div>
     <div class="col-md-3">
-      <label class="form-label" for="crni_max">Макс. Cr·Ni</label>
+      <label class="form-label" for="crni_max">
+      Макс. Cr×Ni
+      <span
+        class="hint-icon"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="Ограничение на произведение содержаний Cr и Ni. Используется как дополнительное технологическое условие."
+      >?</span>
+    </label>
       <input type="number" step="0.1" name="crni_max" id="crni_max" class="form-control" value="{{ values.get('crni_max', 2.0) }}">
     </div>
 
@@ -87,41 +138,146 @@
 
     <!-- Дополнительные коэффициенты -->
     <p>
-      <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#coeffSection" role="button" aria-expanded="false" aria-controls="coeffSection">
-        ⚙️ Дополнительные коэффициенты
-      </a>
+      <div class="d-flex align-items-center gap-2">
+          <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#coeffSection" role="button" aria-expanded="false" aria-controls="coeffSection">
+            ⚙️ Дополнительные коэффициенты
+          </a>
+          <span
+            class="hint-icon"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Коэффициенты математической модели расчёта свойств сплава. Обычно используются значения по умолчанию."
+          >?</span>
+        </div>
     </p>
 
     <div class="collapse" id="coeffSection">
-      <div class="card card-body bg-dark text-light border rounded">
+      <div class="card card-body border rounded coeff-card">
         <h5>Прочность</h5>
         <div class="row g-3">
-          {% for key in ['sigma_base','sigma_Cr','sigma_Mo','sigma_CrMo'] %}
           <div class="col-md-3">
-            <label class="form-label" for="{{ key }}">{{ key }}</label>
-            <input type="number" step="1" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ values.get('coef', {}).get(key, 0) }}">
+            <label class="form-label" for="sigma_base">Базовая прочность, МПа</label>
+            <input type="number" step="1" class="form-control" id="sigma_base" name="sigma_base"
+                   value="{{ values.get('coef', {}).get('sigma_base', 0) }}">
           </div>
-          {% endfor %}
+          <div class="col-md-3">
+            <label class="form-label" for="sigma_Cr">
+              Влияние Cr
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Коэффициент при Cr в уравнении прочности: σ = σ₀ + kCr·Cr + kMo·Mo + kCrMo·Cr·Mo"
+              >?</span>
+            </label>
+            <input type="number" step="1" class="form-control" id="sigma_Cr" name="sigma_Cr"
+                   value="{{ values.get('coef', {}).get('sigma_Cr', 0) }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="sigma_Mo">
+              Влияние Mo
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Коэффициент при Mo в уравнении прочности: σ = σ₀ + kCr·Cr + kMo·Mo + kCrMo·Cr·Mo"
+              >?</span>
+            </label>
+            <input type="number" step="1" class="form-control" id="sigma_Mo" name="sigma_Mo"
+                   value="{{ values.get('coef', {}).get('sigma_Mo', 0) }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="sigma_CrMo">
+              Влияние Cr и Mo
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Коэффициент совместного влияния Cr и Mo в уравнении прочности: σ = σ₀ + kCr·Cr + kMo·Mo + kCrMo·Cr·Mo"
+              >?</span>
+            </label>
+            <input type="number" step="1" class="form-control" id="sigma_CrMo" name="sigma_CrMo"
+                   value="{{ values.get('coef', {}).get('sigma_CrMo', 0) }}">
+          </div>
         </div>
 
         <h5 class="mt-4">Твёрдость</h5>
         <div class="row g-3">
-          {% for key in ['hrc_base','hrc_Ni','hrc_Mn','hrc_NiMn'] %}
           <div class="col-md-3">
-            <label class="form-label" for="{{ key }}">{{ key }}</label>
-            <input type="number" step="1" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ values.get('coef', {}).get(key, 0) }}">
+            <label class="form-label" for="hrc_base">Базовая твёрдость, HRC</label>
+            <input type="number" step="1" class="form-control" id="hrc_base" name="hrc_base"
+                   value="{{ values.get('coef', {}).get('hrc_base', 0) }}">
           </div>
-          {% endfor %}
+          <div class="col-md-3">
+            <label class="form-label" for="hrc_Ni">
+              Влияние Ni
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Коэффициент при Ni в уравнении твёрдости: HRC = HRC₀ + kNi·Ni + kMn·Mn + kNiMn·Ni·Mn"
+              >?</span>
+            </label>
+            <input type="number" step="1" class="form-control" id="hrc_Ni" name="hrc_Ni"
+                   value="{{ values.get('coef', {}).get('hrc_Ni', 0) }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="hrc_Mn">
+              Влияние Mn
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Коэффициент при Mn в уравнении твёрдости: HRC = HRC₀ + kNi·Ni + kMn·Mn + kNiMn·Ni·Mn"
+              >?</span>
+            </label>
+            <input type="number" step="1" class="form-control" id="hrc_Mn" name="hrc_Mn"
+                   value="{{ values.get('coef', {}).get('hrc_Mn', 0) }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="hrc_NiMn">
+              Влияние Ni и Mn
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Коэффициент совместного влияния Ni и Mn в уравнении твёрдости: HRC = HRC₀ + kNi·Ni + kMn·Mn + kNiMn·Ni·Mn"
+              >?</span>
+            </label>
+            <input type="number" step="1" class="form-control" id="hrc_NiMn" name="hrc_NiMn"
+                   value="{{ values.get('coef', {}).get('hrc_NiMn', 0) }}">
+          </div>
         </div>
 
         <h5 class="mt-4">Температура</h5>
         <div class="row g-3">
-          {% for key in ['T_base','T_drop'] %}
           <div class="col-md-3">
-            <label class="form-label" for="{{ key }}">{{ key }}</label>
-            <input type="number" step="0.1" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ values.get('coef', {}).get(key, 0) }}">
+
+              <label class="form-label" for="T_base">
+              Базовая температура плавления, °C
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Температура плавления базового сплава без учёта влияния легирующих элементов."
+              >?</span>
+            </label>
+            <input type="number" step="0.1" class="form-control" id="T_base" name="T_base"
+                   value="{{ values.get('coef', {}).get('T_base', 0) }}">
           </div>
-          {% endfor %}
+          <div class="col-md-3">
+            <label class="form-label" for="T_drop">
+              Коэффициент снижения температуры
+              <span
+                class="hint-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Используется в уравнении температуры плавления: T = T₀ − k·(Cr + Ni + Mo + Mn). Показывает, насколько снижается температура плавления при увеличении суммарного содержания добавок."
+              >?</span>
+            </label>
+            <input type="number" step="0.1" class="form-control" id="T_drop" name="T_drop"
+                   value="{{ values.get('coef', {}).get('T_drop', 0) }}">
+          </div>
         </div>
       </div>
     </div>
@@ -134,16 +290,140 @@
     </div>
   </form>
 </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>
+<script>
+  const defaultValues = {{ default_values|tojson }};
+  const variantsData = {{ variants_data|tojson }};
+
+  const variantSelect = document.getElementById("variant_id");
+  const useSelectedVariantInput = document.getElementById("use_selected_variant");
+
+  let selectedVariantSnapshot = null;
+
+  function setInputValue(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = value ?? "";
+  }
+
+  function applyValues(data) {
+    setInputValue("cr_min", data.bounds.cr[0]);
+    setInputValue("cr_max", data.bounds.cr[1]);
+    setInputValue("ni_min", data.bounds.ni[0]);
+    setInputValue("ni_max", data.bounds.ni[1]);
+    setInputValue("mo_min", data.bounds.mo[0]);
+    setInputValue("mo_max", data.bounds.mo[1]);
+    setInputValue("mn_min", data.bounds.mn[0]);
+    setInputValue("mn_max", data.bounds.mn[1]);
+
+    setInputValue("cost_cr", data.cost.cr);
+    setInputValue("cost_ni", data.cost.ni);
+    setInputValue("cost_mo", data.cost.mo);
+    setInputValue("cost_mn", data.cost.mn);
+
+    setInputValue("sigma_req", data.req.sigma);
+    setInputValue("hard_req", data.req.hrc);
+    setInputValue("t_req", data.req.t);
+
+    setInputValue("sum_max", data.limits.sum_max);
+    setInputValue("sum_min", data.limits.sum_min);
+    setInputValue("crni_max", data.limits.crni_max);
+
+    setInputValue("sigma_base", data.coef.sigma_base);
+    setInputValue("sigma_Cr", data.coef.sigma_Cr);
+    setInputValue("sigma_Mo", data.coef.sigma_Mo);
+    setInputValue("sigma_CrMo", data.coef.sigma_CrMo);
+
+    setInputValue("hrc_base", data.coef.hrc_base);
+    setInputValue("hrc_Ni", data.coef.hrc_Ni);
+    setInputValue("hrc_Mn", data.coef.hrc_Mn);
+    setInputValue("hrc_NiMn", data.coef.hrc_NiMn);
+
+    setInputValue("T_base", data.coef.T_base);
+    setInputValue("T_drop", data.coef.T_drop);
+  }
+
+  function getCurrentFormSnapshot() {
+    return {
+      bounds: {
+        cr: [document.getElementById("cr_min").value, document.getElementById("cr_max").value],
+        ni: [document.getElementById("ni_min").value, document.getElementById("ni_max").value],
+        mo: [document.getElementById("mo_min").value, document.getElementById("mo_max").value],
+        mn: [document.getElementById("mn_min").value, document.getElementById("mn_max").value],
+      },
+      cost: {
+        cr: document.getElementById("cost_cr").value,
+        ni: document.getElementById("cost_ni").value,
+        mo: document.getElementById("cost_mo").value,
+        mn: document.getElementById("cost_mn").value,
+      },
+      req: {
+        sigma: document.getElementById("sigma_req").value,
+        hrc: document.getElementById("hard_req").value,
+        t: document.getElementById("t_req").value,
+      },
+      limits: {
+        sum_max: document.getElementById("sum_max").value,
+        sum_min: document.getElementById("sum_min").value,
+        crni_max: document.getElementById("crni_max").value,
+      },
+      coef: {
+        sigma_base: document.getElementById("sigma_base").value,
+        sigma_Cr: document.getElementById("sigma_Cr").value,
+        sigma_Mo: document.getElementById("sigma_Mo").value,
+        sigma_CrMo: document.getElementById("sigma_CrMo").value,
+        hrc_base: document.getElementById("hrc_base").value,
+        hrc_Ni: document.getElementById("hrc_Ni").value,
+        hrc_Mn: document.getElementById("hrc_Mn").value,
+        hrc_NiMn: document.getElementById("hrc_NiMn").value,
+        T_base: document.getElementById("T_base").value,
+        T_drop: document.getElementById("T_drop").value,
+      }
+    };
+  }
+
+  function snapshotsEqual(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+
+  variantSelect.addEventListener("change", function () {
+    const selectedId = this.value;
+
+    if (!selectedId) {
+      applyValues(defaultValues);
+      selectedVariantSnapshot = null;
+      useSelectedVariantInput.value = "0";
+      return;
+    }
+
+    const variant = variantsData[selectedId];
+    if (!variant) return;
+
+    applyValues(variant);
+    selectedVariantSnapshot = JSON.parse(JSON.stringify(variant));
+    useSelectedVariantInput.value = "1";
+  });
+
+  document.querySelectorAll("input").forEach((input) => {
+    if (input.id === "variant_id" || input.id === "use_selected_variant") return;
+
+    input.addEventListener("input", function () {
+      if (!variantSelect.value || !selectedVariantSnapshot) {
+        useSelectedVariantInput.value = "0";
+        return;
+      }
+
+      const currentSnapshot = getCurrentFormSnapshot();
+      useSelectedVariantInput.value = snapshotsEqual(currentSnapshot, selectedVariantSnapshot) ? "1" : "0";
+    });
+  });
+</script>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-

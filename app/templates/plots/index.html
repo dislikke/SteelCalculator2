@@ -14,7 +14,7 @@
                         <img src="data:image/png;base64,{{ plot }}" class="card-img-top" alt="Plot"
                              style="height: 250px; object-fit: contain;">
                         <div class="card-body text-center">
-                            <a href="data:image/png;base64,{{ plot }}" download="plot.png" class="btn btn-primary">
+                            <a href="data:image/png;base64,{{ plot }}" download="plot_{{ loop.index }}.png" class="btn btn-primary">
                                 Скачать график
                             </a>
                         </div>
@@ -22,6 +22,20 @@
                 </div>
             {% endfor %}
         </div>
+
+        {% if interactive_sigma_plot %}
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h4 class="mb-3 text-center">Интерактивная 3D-визуализация</h4>
+                    <p class="text-muted text-center">
+                        Поверхность прочности в зависимости от содержания Cr и Mo. График можно вращать мышкой.
+                    </p>
+                    <div>
+                        {{ interactive_sigma_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

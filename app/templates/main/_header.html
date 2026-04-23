@@ -1,27 +1,29 @@
 <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-    <a href="/"
-                                                                                                    class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-    <img class="header__img" src="{{ url_for('static', filename='img/steel.png') }}" alt="steel">
+    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-decoration-none">
+        <img class="header__img logo-light-theme" src="{{ url_for('static', filename='img/steel.png') }}" alt="steel">
+        <img class="header__img logo-dark-theme" src="{{ url_for('static', filename='img/steel_dark.png') }}" alt="steel">
     </a>
+
     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-    <li><a href="{{ url_for('main.index') }}" class="nav-link px-2 text-white">Главная</a></li>
-    <li><a href="{{ url_for('form.form') }}" class="nav-link px-2 text-white">Ввод данных</a></li>
-    <li><a href="{{ url_for('variants.list_variants') }}" class="nav-link px-2 text-white">Варианты</a></li>
-
-    <li><a href="{{ url_for('results.list_results') }}" class="nav-link px-2 text-white">Результаты</a></li>
-    <li>
-    <li class="nav-item"><a class="nav-link px-2 text-white" href="{{ url_for('plots.show_plots') }}">Визуализация</a></li>
-
-
-
-
-    <li><a href="{{ url_for('main.about') }}" class="nav-link px-2 text-white">О проекте</a></li>
-
-
+        <li><a href="{{ url_for('main.index') }}" class="nav-link px-2 fs-4">Главная</a></li>
+        <li><a href="{{ url_for('form.form') }}" class="nav-link px-2 fs-4">Ввод данных</a></li>
+        <li><a href="{{ url_for('variants.list_variants') }}" class="nav-link px-2 fs-4">Варианты</a></li>
+        <li><a href="{{ url_for('results.list_results') }}" class="nav-link px-2 fs-4">Результаты</a></li>
+        <li><a class="nav-link px-2 fs-4" href="{{ url_for('plots.show_plots') }}">Визуализация</a></li>
+        <li><a href="{{ url_for('main.about') }}" class="nav-link px-2 fs-4">О проекте</a></li>
     </ul>
 
     <div class="text-end">
-        <button type="button" class="btn btn-outline-light me-2">Login</button>
-        <button type="button" class="btn btn-warning">Sign-up</button>
+        <button id="themeToggle" class="btn btn-outline-secondary me-2" type="button">
+            Сменить тему
+        </button>
+
+        {% if session.get('user_id') %}
+            <span class="me-3 header-user">Привет, {{ session.get('username') }}</span>
+            <a href="{{ url_for('user.logout') }}" class="btn btn-outline-secondary">Выйти</a>
+        {% else %}
+            <a href="{{ url_for('user.login') }}" class="btn btn-outline-secondary me-2">Войти</a>
+            <a href="{{ url_for('user.register') }}" class="btn btn-warning">Зарегистрироваться</a>
+        {% endif %}
     </div>
 </div>

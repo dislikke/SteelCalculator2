@@ -11,21 +11,21 @@
       <div class="card-body">
         <h5 class="card-title">Состав</h5>
         <ul>
-          <li><b>Cr:</b> {{ "%.3f"|format(result.cr) }}</li>
-          <li><b>Ni:</b> {{ "%.3f"|format(result.ni) }}</li>
-          <li><b>Mo:</b> {{ "%.3f"|format(result.mo) }}</li>
-          <li><b>Mn:</b> {{ "%.3f"|format(result.mn) }}</li>
+          <li><b>Cr:</b> {{ "%.3f"|format(result.cr) }} %</li>
+          <li><b>Ni:</b> {{ "%.3f"|format(result.ni) }} %</li>
+          <li><b>Mo:</b> {{ "%.3f"|format(result.mo) }} %</li>
+          <li><b>Mn:</b> {{ "%.3f"|format(result.mn) }} %</li>
         </ul>
 
         <h5 class="card-title mt-3">Свойства</h5>
         <ul>
-          <li><b>Предел прочности:</b> {{ "%.1f"|format(result.sigma) }}</li>
+          <li><b>Предел прочности σ, МПа:</b> {{ "%.1f"|format(result.sigma) }}</li>
           <li><b>Твердость HRC:</b> {{ "%.1f"|format(result.hardness) }}</li>
-          <li><b>Температура плавления:</b> {{ "%.1f"|format(result.t_melt) }}</li>
+          <li><b>Температура плавления, °C:</b> {{ "%.1f"|format(result.t_melt) }}</li>
         </ul>
 
         <h5 class="card-title mt-3">Экономика</h5>
-        <p><b>Стоимость:</b> {{ "%.2f"|format(result.cost) }}</p>
+        <p><b>Стоимость:</b> {{ "%.2f"|format(result.cost) }} усл. ед. на т стали</p>
 
         <p class="text-muted">Дата расчета: {{ result.created_at.strftime("%d.%m.%Y %H:%M") }}</p>
       </div>
