@@ -9,8 +9,9 @@ services:
     ports:
       - "5540:5432"
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - steelcalculator_postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
+
 
   web:
     image: steel_web:${IMAGE_TAG}
@@ -30,4 +31,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  pg_data:
+  steelcalculator_postgres-data:
+    external: true
