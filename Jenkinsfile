@@ -6,8 +6,8 @@ pipeline {
     COMPOSE_FILE = "docker-compose.jenkins.yml"
     IMAGE_TAG = "${env.BUILD_NUMBER}"
     POSTGRES_DB = "db"
-    POSTGRES_USER = "diana"
-    POSTGRES_PASSWORD = "20041902"
+    POSTGRES_USER = "steel_user"
+    POSTGRES_PASSWORD = "steel_calc_2026"
   }
 
   stages {

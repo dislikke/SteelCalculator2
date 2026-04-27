@@ -4,8 +4,8 @@ services:
     container_name: steel_db
     environment:
       POSTGRES_DB: db
-      POSTGRES_USER: diana
-      POSTGRES_PASSWORD: 20041902
+      POSTGRES_USER: steel_user
+      POSTGRES_PASSWORD: steel_calc_2026
     ports:
       - "5540:5432"
     volumes:
@@ -21,7 +21,7 @@ services:
     env_file:
       - ../.env
     environment:
-      DATABASE_URL: postgresql+psycopg2://diana:20041902@db:5432/db
+      DATABASE_URL: postgresql+psycopg2://steel_user:steel_calc_2026@db:5432/db
       FLASK_APP: "app:create_app"
       FLASK_RUN_HOST: "0.0.0.0"
       FLASK_RUN_PORT: "5000"

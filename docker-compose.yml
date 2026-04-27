@@ -3,8 +3,8 @@
     image: postgres:16
     environment:
       POSTGRES_DB: db
-      POSTGRES_USER: diana
-      POSTGRES_PASSWORD: 20041902
+      POSTGRES_USER: steel_user
+      POSTGRES_PASSWORD: steel_calc_2026
     ports:
       - "15432:5432"
     volumes:
@@ -15,9 +15,9 @@
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql+psycopg2://diana:20041902@db:5432/db
+      DATABASE_URL: postgresql+psycopg2://steel_user:steel_calc_2026@db:5432/db
     ports:
-      - "8080:5000"
+      - "5002:5000"
     depends_on:
       - db
 
